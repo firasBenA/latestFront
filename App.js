@@ -1,19 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import Nav from './Nav';
-import {AuthProvider} from './AuthService';
-import { StatusBar } from 'react-native';
-import Modification from './Modification';
-import ChatScreen from './ChatScreen';
+import { AuthProvider } from './AuthService';
 
 const App = () => {
-  return (
+  useEffect(() => {
+    console.log("App component mounted");
+    return () => {
+      console.log("App component unmounted");
+    };
+  }, []);
 
-   /*<AuthProvider>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" hidden />
-      <Nav />
-    </AuthProvider>*/
-    
-    < ChatScreen/>
+  console.log("Rendering App component");
+
+  return (
+    <AuthProvider>
+        <Nav/>
+    </AuthProvider>
   );
 };
 

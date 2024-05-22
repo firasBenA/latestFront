@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
             const { isLoggedIn } = await isLoggedIn(); 
             setIsAuthenticated(isLoggedIn);
             setToken(token); // Set token state
-
+            
         };
 
         checkLoginStatus();

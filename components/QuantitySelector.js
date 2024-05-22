@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useFonts } from 'expo-font';
 
 const QuantitySelector = ({ value, onChangeText }) => {
+
+    let [fontsLoaded] = useFonts({
+        'Lato-Bold': require('../assets/Fonts/Lato/Lato-Bold.ttf'),
+        'Lato-Regular': require('../assets/Fonts/Lato/Lato-Regular.ttf'),
+        'Lato-Black': require('../assets/Fonts/Lato/Lato-Black.ttf'),
+      });
+    
     const [quantity, setQuantity] = useState(value || 1); // Initial quantity
 
     const handleIncrement = () => {
         setQuantity(prevQuantity => prevQuantity + 1);
         onChangeText(quantity + 1); // Update the parent component's value
     };
-
     const handleDecrement = () => {
         if (quantity > 1) {
             setQuantity(prevQuantity => prevQuantity - 1);
@@ -18,14 +25,11 @@ const QuantitySelector = ({ value, onChangeText }) => {
     };
 
     return (
-        <LinearGradient
-            colors={['#F5F5F5', 'grey']}
-            start={[0, 0]}
-            end={[1, 12]}
+        <View
             style={styles.container}
         >
             <View style={{ flexDirection: "row" }}>
-                <Text style={styles.inputText}>$</Text>
+                <Text style={{fontSize:18}}>$</Text>
                 <TextInput
                     style={styles.inputText}
                     value={quantity.toString()}
@@ -35,7 +39,7 @@ const QuantitySelector = ({ value, onChangeText }) => {
                     }}
                     keyboardType="numeric"
                 />
-                <Text style={{ fontSize: 16, alignSelf: "center", paddingHorizontal: 5 }}>per day</Text>
+                <Text style={{ fontSize: 18, alignSelf: "center", paddingHorizontal: 5 ,fontFamily:"Lato-Regular"}}> per day</Text>
             </View>
             <View style={{ flexDirection: "row" }}>
                 <TouchableOpacity style={styles.button} onPress={handleIncrement}>
@@ -45,7 +49,7 @@ const QuantitySelector = ({ value, onChangeText }) => {
                     <Image source={require("../assets/icons/minus.png")} style={{ width: 30, height: 30 }} />
                 </TouchableOpacity>
             </View>
-        </LinearGradient>
+        </View>
     );
 };
 
@@ -54,15 +58,15 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         paddingHorizontal: 30,
-        paddingVertical: 25,
+        paddingVertical: 20,
         borderRadius: 12,
         marginTop: 20,
-        borderWidth: 0.5,
         borderRadius: 12
     },
     inputText: {
         fontSize: 30,
-        fontWeight: "bold",
+        fontFamily:"Lato-Bold"
+
     },
     button: {
         width: 40,

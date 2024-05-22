@@ -154,6 +154,7 @@ const ProfilSettingScreen = () => {
     useEffect(() => {
         const getUserData = async () => {
             try {
+                
                 const userDataString = await AsyncStorage.getItem('user');
                 if (userDataString) {
                     const userData = JSON.parse(userDataString);

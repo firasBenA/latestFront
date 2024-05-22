@@ -140,7 +140,9 @@ const ProfilScreen = ({ route }) => {
     };
 
 
-
+    const goToReservation = async () => {
+        navigation.navigate("Transaction");
+    }
 
     const handleLogout = async () => {
         const success = await logout();
@@ -152,10 +154,13 @@ const ProfilScreen = ({ route }) => {
         }
     };
 
-    const handleCardPress = () => {
+    const handleCardPress = async (boat) => {
 
-        navigation.navigate('Publication', { item })
+        const { id: boatId, userId } = boat;
+        navigation.navigate('Publication', { boatId, userId });
+
     };
+
     const handleParametrePress = () => {
 
         navigation.navigate('ProfilSettingScreen')
@@ -196,16 +201,15 @@ const ProfilScreen = ({ route }) => {
         try {
             const response = await axios.get(`${BASE_URL}api/Boat/boats/user/${userId}`);
             setBoats(response.data);
-            console.log(response.data)
 
         } catch (error) {
             if (error.response) {
-                console.error('Error fetching boats - Status:', error.response.status);
-                console.error('Error fetching boats - Data:', error.response.data);
+                console.log('Error fetching boats - Status:', error.response.status);
+                console.log('Error fetching boats - Data:', error.response.data);
             } else if (error.request) {
-                console.error('Error fetching boats - No response received');
+                console.log('Error fetching boats - No response received');
             } else {
-                console.error('Error fetching boats - Request setup:', error.message);
+                console.log('Error fetching boats - Request setup:', error.message);
             }
         }
     };
@@ -245,6 +249,11 @@ const ProfilScreen = ({ route }) => {
 
                     </View>
                 </BackgroundImage>
+
+                <TouchableOpacity style={styles.button} onPress={goToReservation}>
+                    <Text style={styles.buttonText}>Transaction</Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity style={styles.button} onPress={handleLogout}>
                     <Text style={styles.buttonText}>Logout</Text>
                 </TouchableOpacity>
@@ -266,8 +275,12 @@ const ProfilScreen = ({ route }) => {
                         nbrCabins={boat.nbrCabins}
                         nbrBedrooms={boat.nbrBedrooms}
                         price={boat.price}
+                        city={boat.city}
+                        country={boat.country}
+                        showIcon={true}
+                    >
 
-                    />
+                    </Card>
                 </TouchableOpacity>
 
             ))}

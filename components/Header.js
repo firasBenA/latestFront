@@ -22,7 +22,7 @@ function Header() {
     <View style={styles.header}>
       {!isSearchOpen && (
         <View style={styles.logoContainer}>
-          <Image style={{ height: 90, width: 90 }} source={require('../assets/Logo.png')} />
+          <Image style={{ height: 60, width: 60 }} source={require('../assets/Logo.png')} />
         </View>
       )}
       <View style={styles.searchContainer}>
@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'flex-start',
+    paddingLeft:10
   },
   searchContainer: {
     flex: 4,

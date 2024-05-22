@@ -9,6 +9,7 @@ import AuthService from '../../AuthService';
 
 import { Dimensions } from 'react-native';
 import Header from '../../components/Header'
+
 const SignInScreen = () => {
     const [token, setToken] = useState(null);
 
@@ -30,6 +31,8 @@ const SignInScreen = () => {
     if (!fontsLoaded) {
         return null;
     }
+
+    
 
     const handleLogin = async () => {
         if (!email || !password) {

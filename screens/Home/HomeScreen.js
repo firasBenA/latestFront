@@ -92,7 +92,8 @@ export default function HomeScreen() {
             nbrCabins={boat.nbrCabins}
             nbrBedrooms={boat.nbrBedrooms}
             price={boat.price}
-
+            city={boat.city}
+            country={boat.country}
           />
         </TouchableOpacity>
 

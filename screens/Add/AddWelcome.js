@@ -12,7 +12,6 @@ import Header from '../../components/Header';
 import MapView, { Marker } from 'react-native-maps';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Geocoder from 'react-native-geocoding'; // Import the geocoding package
 
 
 
@@ -26,7 +25,6 @@ const AddWelcome = () => {
 
     const [selectedLocation, setSelectedLocation] = useState(null);
     const [selectedAddress, setSelectedAddress] = useState('');
-    Geocoder.init('AIzaSyAz0bPO0-6CYWLEFRwAUD6DF5lcWqA195E');
 
 
     const navigation = useNavigation();
@@ -48,16 +46,90 @@ const AddWelcome = () => {
     const [nbrBedrooms, setNbrBedrooms] = useState(0);
     const [nbrCabins, setNbrCabins] = useState(0);
     const [type, setType] = useState('Yacht');
-    const [phoneNumber, setPhoneNumber] = useState('1234567890'); // Converted to string
+    const [phoneNumber, setPhoneNumber] = useState('1234567890'); // Converted to string 
+    const [country, setCountry] = useState('');
+    const [city, setCity] = useState('');
     const [imageUrl, setImageUrl] = useState('');
     const [step, setStep] = useState(0);
     const [userName, setUserName] = useState('');
 
     const [boatType, setBoatType] = useState(null);
 
+    const [wifi, setWifi] = useState(0);
+    const [tv, setTv] = useState(0);
+    const [hotWater, setHotWater] = useState(0);
+    const [GPS, setGPS] = useState(0);
+    const [bathingLadder, setBathingLadder] = useState(0);
+    const [pilotAutomatique, setPilotAutomatique] = useState(0);
+    const [shower, setShower] = useState(0);
+    const [speaker, setSpeaker] = useState(0);
 
+    const handleButtonPress = (label) => {
+        switch (label) {
+            case 'WIFI':
+                setWifi(prevWifi => {
+                    const newWifi = prevWifi === 0 ? 1 : 0;
+                    console.log("wifi", newWifi);
+                    return newWifi;
+                });
+                break;
+            case 'TV':
+                setTv(prevTv => {
+                    const newTv = prevTv === 0 ? 1 : 0;
+                    console.log("tv", newTv);
+                    return newTv;
+                });
+                break;
+            case 'Hot water':
+                setHotWater(prevHotWater => {
+                    const newHotWater = prevHotWater === 0 ? 1 : 0;
+                    console.log("hotWater", newHotWater);
+                    return newHotWater;
+                });
+                break;
+            case 'GPS':
+                setGPS(prevGPS => {
+                    const newGPS = prevGPS === 0 ? 1 : 0;
+                    console.log("GPS", newGPS);
+                    return newGPS;
+                });
+                break;
+            case 'bathing-ladder':
+                setBathingLadder(prevBathingLadder => {
+                    const newBathingLadder = prevBathingLadder === 0 ? 1 : 0;
+                    console.log("bathingLadder", newBathingLadder);
+                    return newBathingLadder;
+                });
+                break;
+            case 'Pilot Auto':
+                setPilotAutomatique(prevPilotAutomatique => {
+                    const newPilotAutomatique = prevPilotAutomatique === 0 ? 1 : 0;
+                    console.log("pilotAutomatique", newPilotAutomatique);
+                    return newPilotAutomatique;
+                });
+                break;
+            case 'Shower':
+                setShower(prevShower => {
+                    const newShower = prevShower === 0 ? 1 : 0;
+                    console.log("shower", newShower);
+                    return newShower;
+                });
+                break;
+            case 'Speaker':
+                setSpeaker(prevSpeaker => {
+                    const newSpeaker = prevSpeaker === 0 ? 1 : 0;
+                    console.log("speaker", newSpeaker);
+                    return newSpeaker;
+                });
+                break;
+            default:
+                break;
+        }
+    };
 
+    useEffect(() => {
 
+    }, []);
 
 
     const [fontsLoaded] = useFonts({
@@ -89,6 +161,32 @@ const AddWelcome = () => {
         }
     };
 
+    const addEquipement = async (newId) => {
+
+        console.log('boatId:', newId);
+        const idBoat = newId;
+        try {
+            const equipmentResponse = await axios.post(`${BASE_URL}api/Equipment`, {
+                idBoat,
+                wifi,
+                tv,
+                hotWater,
+                GPS,
+                bathingLadder,
+                pilotAutomatique,
+                shower,
+                speaker,
+
+            });
+
+            console.log('equipment added:', equipmentResponse.data);
+
+        } catch (error) {
+            console.error('Error adding equipment:', error);
+            Alert.alert('Error', 'Error adding equipment. Please try again later.');
+        }
+    };
+
     const addBoat = async () => {
         console.log(boatType);
         try {
@@ -109,18 +207,24 @@ const AddWelcome = () => {
                 phoneNumber,
                 boatType,
                 userId,
+                country,
+                city,
             });
 
             console.log('Boat added:', boatResponse.data);
+
             const newId = boatResponse.data.id;
+
             setId(newId);
 
             console.log('Updated id:', newId);
 
             Alert.alert('Success', 'Boat added successfully');
 
-
             await updateBoatImage(newId, imageUrl);
+            await addEquipement(newId);
+
+
         } catch (error) {
             console.error('Error adding boat:', error);
             Alert.alert('Error', 'Failed to add boat. Please try again later.');
@@ -271,7 +375,7 @@ const AddWelcome = () => {
         }
     };
 
-    const GridButton = ({ item, onPress,isSelected }) => (
+    const GridButton = ({ item, onPress, isSelected }) => (
 
         <TouchableOpacity activeOpacity={0.2} style={[styles.buttonContainer, isSelected && styles.selectedButton]} onPress={() => onPress(item)}>
             <LinearGradient
@@ -550,6 +654,27 @@ const AddWelcome = () => {
 
                 <View style={{ marginBottom: 80, marginTop: 40 }}>
                     <Text style={styles.simpleText}>Where is your boat located</Text>
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                        <View style={{ flexDirection: "column", width: "49%" }}>
+                            <Text style={styles.Label}>Country</Text>
+                            <TextInput
+                                value={country}
+                                style={styles.miniInput}
+                                onChangeText={text => setCountry(text)}
+                            />
+                        </View>
+                        <View style={{ flexDirection: "column", width: "49%" }}>
+                            <Text style={styles.Label}>City</Text>
+                            <TextInput
+                                value={city}
+                                style={styles.miniInput}
+                                onChangeText={text => setCity(text)}
+                            />
+                        </View>
+
+
+                    </View>
                     <View style={styles.mapContainer}>
                         <MapView
                             style={styles.map}
@@ -584,7 +709,10 @@ const AddWelcome = () => {
     );
 
     const GridEquipmentsButton = ({ item }) => (
-        <TouchableOpacity style={styles.buttonEquipementsContainer}>
+        <TouchableOpacity
+            style={styles.buttonEquipementsContainer}
+            onPress={() => handleButtonPress(item.label)}
+        >
             <Image source={item.image} style={styles.miniIcons} />
             <Text style={{ fontFamily: "Lato-Regular", fontSize: 18, paddingTop: 10 }}>{item.label}</Text>
         </TouchableOpacity>
@@ -596,28 +724,32 @@ const AddWelcome = () => {
         { id: 3, label: 'Hot water', image: require('../../assets/icons/equipments/hot-water.png') },
         { id: 4, label: 'GPS', image: require('../../assets/icons/equipments/gps.png') },
         { id: 5, label: 'bathing-ladder', image: require('../../assets/icons/equipments/bathing-ladder.png') },
-        { id: 6, label: 'Pilot', image: require('../../assets/icons/equipments/pilot.png') },
+        { id: 6, label: 'Pilot Auto', image: require('../../assets/icons/equipments/pilot.png') },
         { id: 7, label: 'Shower', image: require('../../assets/icons/equipments/shower.png') },
         { id: 8, label: 'Speaker', image: require('../../assets/icons/equipments/speaker.png') },
-        
+
     ];
 
-    const renderStepFive = () => (
-        <View>
-            <Header />
-            <View style={styles.container}>
-                <View style={{ marginBottom: 20 }}>
-                    <Text style={styles.simpleText}>On board equipments</Text>
-                </View>
-                <View style={{ flexWrap: 'wrap', flexDirection: "row" }}>
-                    {buttonsEquipementsData.map((item) => (
-                        <GridEquipmentsButton key={item.id} item={item} />
-                    ))}
+    const renderStepFive = () => {
+
+
+        return (
+            <View>
+                <Header />
+                <View style={styles.container}>
+                    <View style={{ marginBottom: 20 }}>
+                        <Text style={styles.simpleText}>On board equipments</Text>
+                    </View>
+                    <View style={{ flexWrap: 'wrap', flexDirection: "row" }}>
+                        {buttonsEquipementsData.map((item) => (
+                            <GridEquipmentsButton key={item.id} item={item} />
+                        ))}
+                    </View>
                 </View>
             </View>
-        </View>
+        );
+    };
 
-    );
 
     const renderStepSix = () => (
         <View>
@@ -903,6 +1035,15 @@ const styles = StyleSheet.create({
         paddingTop: 30,
         textDecorationLine: 'underline'
 
+    },
+    miniInput: {
+        marginTop: 10,
+        borderWidth: 1,
+        borderColor: '#DDDDDD',
+        borderRadius: 8,
+        width: "94%",
+        height: 50,
+        padding: 10
     },
 });
 

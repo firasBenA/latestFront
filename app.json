@@ -17,11 +17,12 @@
     "ios": {
       "supportsTablet": true
     },
-    "android": {
+    "android": {  
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#F5F5F5"
-      }
+      },
+      "package": "com.anisgh07.RBoat"
     },
     "web": {
       "favicon": "./assets/favicon.png"

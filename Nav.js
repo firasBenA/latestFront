@@ -5,8 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthService } from './AuthService'; // Make sure AuthService is imported correctly
 import HomeScreen from './screens/Home/HomeScreen';
 import LoginScreen from './LoginScreen';
-import RegisterScreen from './RegisterScreen';
-
+import Test from './screens/Publication/Test'
 /////
 import { Image, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
@@ -29,6 +28,10 @@ import dummyMessages from './Data';
 import Filter from './screens/Search/Filter';
 import Transaction from './screens/stackScreens/Transaction';
 import ProfileUser from './screens/Profile/ProfileUser'
+import EditBoat from './screens/Profile/EditBoat'
+
+import { color } from 'react-native-elements/dist/helpers';
+import { style } from 'deprecated-react-native-prop-types/DeprecatedImagePropType';
 
 
 const Stack = createStackNavigator();
@@ -69,10 +72,10 @@ const TabGroup = () => {
                 options={{
                     headerShown: false,
                     tabBarIcon: () => (
-                        <View style={{ marginTop: -24, backgroundColor: 'white', borderRadius: 50, padding: 10, elevation: 5, }}>
+                        <View style={{ marginTop: -28, backgroundColor: 'transparent', borderRadius: 50 }}>
                             <Image
-                                source={require("./assets/icons/add.png")}
-                                style={{ width: 30, height: 30 }}
+                                source={require("./assets/Logo.png")}
+                                style={{ width: 80, height: 80 }}
                             />
                         </View>
                     ),
@@ -120,6 +123,8 @@ const Nav = () => {
                 <Stack.Screen name="SignInScreen" component={SignInScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="SignUpScreen" component={SignUpScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="ProfileUser" component={ProfileUser} options={{ headerShown: false }} />
+                <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
+                <Stack.Screen name="EditBoat" component={EditBoat} options={{ headerShown: false }} />
             </Stack.Navigator>
         </NavigationContainer>
     );

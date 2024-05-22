@@ -9,6 +9,7 @@ import axios from 'axios';
 import Swiper from 'react-native-swiper';
 import { useNavigation } from '@react-navigation/native';
 import Favorite from './Favorite';
+import Icon from 'react-native-vector-icons/Feather';
 
 
 //////
@@ -18,7 +19,7 @@ const CARD_HEIGHT = 300;
 ///////
 
 
-const Card = ({ title, imageUrl, description, userId, capacity, nbrCabins, nbrBedrooms, boatId, onPress, price }) => {
+const Card = ({ title, imageUrl, description, city, capacity, nbrCabins, nbrBedrooms, boatId, country, price, showIcon }) => {
 
   /*const [boats, setBoats] = useState([]);
 
@@ -36,7 +37,11 @@ const Card = ({ title, imageUrl, description, userId, capacity, nbrCabins, nbrBe
     fetchBoats();
   }, []);*/
 
-
+  const [isCardFavorited, setIsCardFavorited] = useState(false);
+  const handleSaveCard = (isFavorited) => {
+    setIsCardFavorited(isFavorited);
+    // Here you can save the card data or perform any other action based on favorite status
+  };
 
   let [fontsLoaded] = useFonts({
 
@@ -68,98 +73,105 @@ const Card = ({ title, imageUrl, description, userId, capacity, nbrCabins, nbrBe
                         sliderBoxHeight={250}
                         style={styles.image}
                       />*/
+  const navigation = useNavigation();
 
-  
-
+  const goToSetting = () => {
+    navigation.navigate('EditBoat',{boatId});
+  };
   return (
 
-      <View style={styles.containerCard}>
-        <View style={styles.card}>
-          <View style={styles.imageBox}>
-            {imageUrl && <Image source={{ uri: imageUrl }} style={styles.image} />}
-            <View style={styles.overlay}>
-              <Favorite style={styles.heartIcon} />
-            </View>
+    <View style={styles.containerCard}>
+      <View style={styles.card}>
+        <View style={styles.imageBox}>
+          {imageUrl && <Image source={{ uri: imageUrl }} style={styles.image} />}
+          <View style={styles.overlay}>
+            <TouchableOpacity onPress={goToSetting} style={[styles.touchable, { zIndex: 999999 }]}>
+              {showIcon && (
+                <Icon name="settings" size={30} style={styles.Editicon} />
+              )}
+            </TouchableOpacity>
+            <Favorite style={styles.heartIcon} onSave={handleSaveCard} />
           </View>
-          <View style={styles.titleBox}>
-            <Text style={styles.title}>{title}</Text>
-            <Text style={styles.description}>{description}</Text>
-            <Text style={styles.place}>Santa Maria, Milazzo</Text>
-            <View style={{ justifyContent: 'space-between', flexDirection: 'row', marginTop: 10 }}>
-              <View style={{ flexDirection: 'row' ,alignItems:'center'}}>
-                <Text style={styles.avg}>A partire de </Text>
-                <Text style={styles.price}>{price}$</Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <StarRating rating={rating} onRatingChange={handleRatingChange} style={styles.starIcon} />
-                <Text style={{ marginRight: 10, paddingLeft: 5, fontSize: 16, fontWeight: "400" }}>(12)</Text>
-              </View>
+        </View>
+        <View style={styles.titleBox}>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.description} numberOfLines={1}>{description}</Text>
+          <Text style={styles.place}>{city}, {country}</Text>
+          <View style={{ justifyContent: 'space-between', flexDirection: 'row', marginTop: 10 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.avg}>A partire de </Text>
+              <Text style={styles.price}>{price}$</Text>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <StarRating rating={rating} onRatingChange={handleRatingChange} style={styles.starIcon} />
+              <Text style={{ marginRight: 10, paddingLeft: 5, fontSize: 16, fontWeight: "400" }}>(12)</Text>
             </View>
           </View>
         </View>
       </View>
+    </View>
 
     /* <View style={styles.container}>
- 
-       <FlatList
-         data={list}
-         decelerationRate="fast"
-         keyExtractor={i => i.id}
-         renderItem={({ item, index }) => {
-           return (
-             <View style={{ alignItems: "center" }}>
-               <View style={styles.containerCard}>
- 
-                 <TouchableOpacity onPress={() => goTo(item)} >
-                   <View style={[styles.card]}>
- 
-                     <View style={styles.imageBox}>
-                       <Image source={item.images} style={styles.image} />
- 
-                       <View style={styles.overlay}>
-                         <Favorite style={styles.heartIcon} />
-                       </View>
-                     </View>
-                     <View style={styles.titleBox}>
-                       <Text style={styles.title}>{item.title}</Text>
-                       <Text style={styles.description} numberOfLines={1}>{item.description}</Text>
-                       <Text style={styles.place}>{item.location.ville},{item.location.pays}</Text>
-                       <View style={{ justifyContent: "space-between", flexDirection: "row", marginTop: 10 }}>
-                         <View style={{ flexDirection: "row" }}>
-                           <Text style={styles.price}>$</Text><Text style={styles.price}>{item.price}</Text><Text style={styles.avg}>avg/Day</Text>
-                         </View>
-                         <View style={{ flexDirection: "row" }}>
-                           <StarRating rating={rating} onRatingChange={handleRatingChange} style={styles.starIcon} />
-                           <Text style={{ marginRight: 10, paddingLeft: 5, fontSize: 16, fontWeight: "400" }}>(12)</Text>
-                         </View>
-                       </View>
-                     </View>
- 
-                   </View>
-                 </TouchableOpacity>
- 
-               </View>
-             </View>
- 
- 
-           )
-         }
-         }
-       />
- 
-     </View>
- */
+
+        <FlatList
+          data={list}
+          decelerationRate="fast"
+          keyExtractor={i => i.id}
+          renderItem={({ item, index }) => {
+            return (
+              <View style={{ alignItems: "center" }}>
+                <View style={styles.containerCard}>
+
+                  <TouchableOpacity onPress={() => goTo(item)} >
+                    <View style={[styles.card]}>
+
+                      <View style={styles.imageBox}>
+                        <Image source={item.images} style={styles.image} />
+
+                        <View style={styles.overlay}>
+                          <Favorite style={styles.heartIcon} />
+                        </View>
+                      </View>
+                      <View style={styles.titleBox}>
+                        <Text style={styles.title}>{item.title}</Text>
+                        <Text style={styles.description} numberOfLines={1}>{item.description}</Text>
+                        <Text style={styles.place}>{item.location.ville},{item.location.pays}</Text>
+                        <View style={{ justifyContent: "space-between", flexDirection: "row", marginTop: 10 }}>
+                          <View style={{ flexDirection: "row" }}>
+                            <Text style={styles.price}>$</Text><Text style={styles.price}>{item.price}</Text><Text style={styles.avg}>avg/Day</Text>
+                          </View>
+                          <View style={{ flexDirection: "row" }}>
+                            <StarRating rating={rating} onRatingChange={handleRatingChange} style={styles.starIcon} />
+                            <Text style={{ marginRight: 10, paddingLeft: 5, fontSize: 16, fontWeight: "400" }}>(12)</Text>
+                          </View>
+                        </View>
+                      </View>
+
+                    </View>
+                  </TouchableOpacity>
+
+                </View>
+              </View>
+
+
+            )
+          }
+          }
+        />
+
+      </View>
+      */
 
     /*<View style={styles.container}>
 
-      <FlatList
-        data={boats}
-        decelerationRate="fast"
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderBoatItem}
-      />
+        <FlatList
+          data={boats}
+          decelerationRate="fast"
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderBoatItem}
+        />
 
-    </View>*/
+      </View>*/
 
 
   );
@@ -207,7 +219,18 @@ const styles = StyleSheet.create({
     color: 'red',
     zIndex: 999,
   },
-
+  Editicon: {
+    
+    color: 'white',
+    margin: 5
+  },
+  touchable: {
+    position: 'absolute',
+    top: 5,
+    left: 5,
+    zIndex: 999,
+    margin:5
+  },
   titleBox: {
     left: 8,
     paddingTop: 12

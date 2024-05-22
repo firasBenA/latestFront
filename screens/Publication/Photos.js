@@ -69,7 +69,5 @@ const Header = () => {
             </View>
         </View>
     )
-
 }
-
 export default Photos

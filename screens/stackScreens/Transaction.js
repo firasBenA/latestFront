@@ -1,231 +1,137 @@
-import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ScrollView } from 'react-native'
-import React from 'react';
-import Icon from 'react-native-vector-icons/Feather';
-import Header from '../../components/Header';
-import TransactionActivity from "../../components/TransactionActivity"
-import TransactionActivity1 from '../../components/TransactionActivity1';
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { CheckBox } from 'react-native-elements';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BASE_URL } from '../../config';
+import axios from 'axios';
 import { useFonts } from 'expo-font';
+import Header from '../../components/Header';
 
-
-
-
-
-
-
-const Transaction = () => {
+const TransactionActivity = () => {
+    const [isChecked, setIsChecked] = useState(false);
+    const [reservations, setReservations] = useState([]);
+    const [boats, setBoats] = useState({});
+    const [userId, setUserId] = useState(null);
+    const [user, setUser] = useState(null);
 
     let [fontsLoaded] = useFonts({
-        
-        'Lato-Regular': require('../../assets/Fonts/Lato-Regular.ttf'),
         'Lato-Bold': require('../../assets/Fonts//Lato/Lato-Bold.ttf'),
         'Lato-Regular': require('../../assets/Fonts//Lato/Lato-Regular.ttf'),
         'Lato-Black': require('../../assets/Fonts//Lato/Lato-Black.ttf'),
-    
-      });
-    
-      if (!fontsLoaded) {
-        return null;
-      }
 
+    });
+    if (!fontsLoaded) {
+        return null;
+    }
+
+    const handleCheckboxChange = () => {
+        setIsChecked(!isChecked);
+    };
+
+    useEffect(() => {
+
+
+        const fetchBoats = async (boatId) => {
+            try {
+                const response = await axios.get(`${BASE_URL}api/Boat/boat/${boatId}`);
+                setBoats({ ...boats, [boatId]: response.data });
+            } catch (error) {
+                console.error('Error fetching boats:', error);
+            }
+        };
+
+        const fetchReservation = async () => {
+            try {
+
+                const userData = await AsyncStorage.getItem('user');
+                const user = JSON.parse(userData);
+                setUserId(user.id);
+
+                const response = await axios.get(`${BASE_URL}api/Reservation/user/${user.id}`);
+                setReservations(response.data);
+                response.data.forEach((reservation) => fetchBoats(reservation.idBoat));
+                console.log(response.data)
+            } catch (error) {
+                console.log('Error fetching reservations:', error);
+            }
+        };
+
+        fetchReservation();
+    }, []);
 
     return (
+        <ScrollView style={styles.scrollView} >
+            <Header/>
+            <View style={styles.container}>
+                <Text style={[styles.id, { fontFamily: 'Lato-Bold' }]}>ID</Text>
 
-        <ScrollView style={styles.feedcontainer}>
-
-            <Header />
-
-            <View style={styles.line} />
-            <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                <View >
-                    <Text style={styles.feedtitre}>
-                        Hello Anis
-                    </Text>
-                    <Text style={styles.simpleText}>@anisgh</Text>
+                <View style={{ flexDirection: 'column', width: "50%" }}>
+                    <Text style={[styles.date, { fontFamily: 'Lato-Bold' }]}>DATE</Text>
                 </View>
-                <TouchableOpacity style={styles.userContainer} >
-                    <View style={styles.userBorder}>
-                        <Icon name="plus" size={30} color="black" />
+
+                <Text style={[styles.boatName, { fontFamily: 'Lato-Bold' }]}>BOAT</Text>
+                <Text style={[styles.price, { fontFamily: 'Lato-Bold' }]}>PRICE</Text>
+            </View>
+            {reservations.map((reservation) => (
+                <View key={reservation.id} style={styles.container}>
+                    <Text style={styles.id}>{reservation.id}</Text>
+
+                    <View style={{ flexDirection: 'column', width: "50%" }}>
+                        <Text style={styles.date}>date Debut : {reservation.dateDebut}</Text>
+                        <Text style={styles.date}>date Fin :{reservation.dateFin}</Text>
                     </View>
-                </TouchableOpacity>
-            </View>
-            <View style={{alignItems:"center"}}>
-                <TouchableOpacity style={styles.card}>
-                    <Text style={styles.cardtext1}>New Orders</Text>
-                    <Text style={styles.cardtext2}> 157 </Text>
-                    <Text style={styles.cardtext1}>vs. 178 last period</Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity style={styles.card}>
-                    <Text style={styles.cardtext1}>New Orders Revenue</Text>
-                    <Text style={styles.cardtext2}> $1576.65 </Text>
-                    <Text style={styles.cardtext1}>vs. 12 last period</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.card}>
-                    <Text style={styles.cardtext1}>Avg. Orders Revenue</Text>
-                    <Text style={styles.cardtext2}> $789.99 </Text>
-                    <Text style={styles.cardtext1}>vs. 12 last period</Text>
-                </TouchableOpacity>
-            </View>
-
-
-            <View style={{ paddingTop: 40 }}>
-                <Text style={styles.feedtitre}>
-                    Transaction Activity
-                </Text>
-            </View>
-            <View style={{ paddingTop: 15 }}>
-                <View style={styles.inputContainer}>
-
-                    <TouchableOpacity style={styles.input}>
-                        <View style={{ flexDirection: "row", justifyContent: 'space-between' }} >
-
-                            <Image
-                                source={require('../../assets/icons/search.png')}
-                                style={{ width: 20, height: 20, marginLeft: 40, marginTop: 10 }} />
-                            <TextInput style={styles.inputactivity}
-                                placeholder="Search by name">
-                            </TextInput>
-                        </View>
-                    </TouchableOpacity>
+                    <Text style={styles.boatName}>{boats[reservation.idBoat]?.name}</Text>
+                    <Text style={styles.price}>${reservation.prixTotale}</Text>
                 </View>
-            </View>
-            <ScrollView horizontal>
-                <View style={{ flexDirection: "column" }}>
+            ))}
+        </ScrollView>
+    );
+};
 
-                    <TransactionActivity1 />
-                    <TransactionActivity />
-                    <TransactionActivity />
-                    <TransactionActivity />
-                    <TransactionActivity />
-                    <TransactionActivity />
-                    <TransactionActivity />
-                    <TransactionActivity />
-                    <TransactionActivity />
-                    <TransactionActivity />
-
-                </View>
-
-
-
-            </ScrollView>
-
-        </ScrollView >
-
-
-
-
-
-
-
-
-    )
-}
 const styles = StyleSheet.create({
-
-    feedcontainer: {
+    scrollView: {
         flex: 1,
-        backgroundColor: "white"
+        backgroundColor:"white"
     },
-
-    feedtitre: {
-
-        fontSize: 30,
-        color: 'black',
-        paddingTop: 5,
-        marginLeft: 15,
-        fontFamily:'Lato-Regular'
-
-
-    },
-    line: {
-        borderBottomColor: 'grey',
-        borderBottomWidth: 0.3,
-        width: "100%",
-        marginBottom: 15,
-        alignSelf: "center"
-    },
-    simpleText: {
-
-        fontSize: 17,
-        color: 'black',
-        marginLeft: 15,
-        marginTop: 5,
-        fontFamily:'Lato-Regular'
-
-    },
-
     container: {
-        justifyContent: 'center',
+        flexDirection: 'row',
         alignItems: 'center',
-    },
-    button: {
-        backgroundColor: 'blue',
         padding: 10,
-        borderRadius: 5,
+        height: 100,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
     },
-
-    userContainer: {
-        paddingRight: 15,
-        paddingTop: 15,
-
+    checkboxContainer: {
+        marginRight: 10,
     },
-    userBorder: {
-        borderWidth: 2,
-        borderColor: 'black',
-        borderRadius: 60,
-        padding: 4,
+    id: {
+        width: "8%",
+        marginRight: 10,
+        fontFamily: 'Lato-Regular'
 
     },
-
-    card: {
-        height: 170,
-        width: 380,
-        elevation: 2, // Adjust the elevation value as needed
-        backgroundColor: '#FFFFFF', // Set a background color if needed
-        marginTop: 25,
-        borderRadius: 15,
-        justifyContent:'center',
-        paddingHorizontal:20
-    },
-    cardtext2: {
-        fontSize: 24,
-        color: 'black',
-        margin: 10,
-        fontFamily:'Lato-Regular'
+    name: {
+        width: "10%",
+        fontFamily: 'Lato-Regular'
 
     },
-
-    cardtext1: {
-        fontSize: 18,
-        color: 'black',
-        margin: 10,
-        fontFamily:'Lato-Regular'
-
+    date: {
+        fontFamily: 'Lato-Regular'
     },
-    inputContainer:{
-        alignItems:"center"
+    boatName: {
+        fontFamily: 'Lato-Regular',
+        width: "20%",
     },
-    input: {
-        height: 40,
-        width: "95%",
-        elevation: 2,
-        backgroundColor: '#FFFFFF',
-        marginTop: 25,
-        borderRadius: 15,
-        flexDirection: "row",
-        justifyContent: 'center'
+    price: {
+        width: "14%",
     },
-    inputactivity: {
-        paddingLeft: 20,
-        borderRadius: 4,
-        width: "100%",
-        height: 40,
-
+    image: {
+        height: 50,
+        width: 50,
+        borderRadius: 50,
+        marginRight: 10,
     },
-
-
-
 });
 
-export default Transaction;
+export default TransactionActivity;
